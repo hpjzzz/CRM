@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.demo.crm.mapper.DepartmentMapper">
+  <resultMap id="BaseResultMap" type="cn.demo.crm.domain.Department">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from department
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="cn.demo.crm.domain.Department">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into department (id, name)
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.demo.crm.domain.Department">
+    update department
+    set name = #{name,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, name
+    from department
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, name
+    from department
+  </select>
+  <select id="selectByPage" resultMap="BaseResultMap">
+    select id, name
+    from department limit #{offset},#{rows}
+  </select>
+  <select id="findCount" resultType="int">
+    select count(*)
+    from department
+  </select>
+  <!--mapper层传入的是对象-->
+  <select id="search" resultMap="BaseResultMap">
+    select id, name
+    from department
+    <where>
+      <if test="department.name != null">
+        name like concat('%',#{department.name},'%')
+      </if>
+    </where>
+    limit #{con.offset},#{con.rows}
+  </select>
+</mapper>

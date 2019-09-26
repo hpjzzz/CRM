@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.demo.crm.mapper.MenuMapper">
+  <resultMap id="BaseResultMap" type="cn.demo.crm.domain.Menu">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="icon" jdbcType="VARCHAR" property="icon" />
+    <result column="parent_id" jdbcType="BIGINT" property="parentId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from menu
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="cn.demo.crm.domain.Menu">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into menu (id, name, url, 
+      icon, parent_id)
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, 
+      #{icon,jdbcType=VARCHAR}, #{parentId,jdbcType=BIGINT})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.demo.crm.domain.Menu">
+    update menu
+    set name = #{name,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      icon = #{icon,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, name, url, icon, parent_id
+    from menu
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, name, url, icon, parent_id
+    from menu
+  </select>
+
+
+  <resultMap id="comboMap" type="cn.demo.crm.domain.Menu">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="icon" jdbcType="VARCHAR" property="icon" />
+    <result column="parent_id" jdbcType="BIGINT" property="parentId" />
+    <!--<result column="" property="text" jdbcType="VARCHAR"/>-->
+    <collection property="children" ofType="cn.demo.crm.domain.Menu" javaType="list" column="id" select="findChildren"></collection>
+  </resultMap>
+  <select id="findByLoginUser" parameterType="long" resultMap="comboMap">
+    SELECT DISTINCT m2.* from role_permission rp
+    join permission p on rp.permission_id = p.id
+    join menu m on p.menu_id = m.id
+    join menu m2 on m.parent_id = m2.id
+    where rp.role_id = (select er.role_id from employee_role er where er.employee_id = #{id})
+  </select>
+  <select id="findChildren" parameterType="long" resultType="cn.demo.crm.domain.Menu">
+    select * from menu where parent_id = #{id}
+  </select>
+</mapper>

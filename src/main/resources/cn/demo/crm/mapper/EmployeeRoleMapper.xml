@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.demo.crm.mapper.EmployeeRoleMapper">
+  <resultMap id="BaseResultMap" type="cn.demo.crm.domain.EmployeeRole">
+    <id column="employee_id" jdbcType="BIGINT" property="employeeId" />
+    <id column="role_id" jdbcType="BIGINT" property="roleId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from employee_role
+    where employee_id = #{employeeId,jdbcType=BIGINT}
+      and role_id = #{roleId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="cn.demo.crm.domain.EmployeeRole">
+    insert into employee_role (employee_id, role_id)
+    values (#{employeeId,jdbcType=BIGINT}, #{roleId,jdbcType=BIGINT})
+  </insert>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select employee_id, role_id
+    from employee_role
+  </select>
+</mapper>

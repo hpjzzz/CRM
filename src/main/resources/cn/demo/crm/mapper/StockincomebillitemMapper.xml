@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.demo.crm.mapper.StockincomebillitemMapper">
+  <resultMap id="BaseResultMap" type="cn.demo.crm.domain.Stockincomebillitem">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="num" jdbcType="DECIMAL" property="num" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="descs" jdbcType="VARCHAR" property="descs" />
+    <result column="product_id" jdbcType="BIGINT" property="productId" />
+    <result column="bill_id" jdbcType="BIGINT" property="billId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from stockincomebillitem
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="cn.demo.crm.domain.Stockincomebillitem">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into stockincomebillitem (id, price, num, 
+      amount, descs, product_id, 
+      bill_id)
+    values (#{id,jdbcType=BIGINT}, #{price,jdbcType=DECIMAL}, #{num,jdbcType=DECIMAL}, 
+      #{amount,jdbcType=DECIMAL}, #{descs,jdbcType=VARCHAR}, #{productId,jdbcType=BIGINT}, 
+      #{billId,jdbcType=BIGINT})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.demo.crm.domain.Stockincomebillitem">
+    update stockincomebillitem
+    set price = #{price,jdbcType=DECIMAL},
+      num = #{num,jdbcType=DECIMAL},
+      amount = #{amount,jdbcType=DECIMAL},
+      descs = #{descs,jdbcType=VARCHAR},
+      product_id = #{productId,jdbcType=BIGINT},
+      bill_id = #{billId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, price, num, amount, descs, product_id, bill_id
+    from stockincomebillitem
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, price, num, amount, descs, product_id, bill_id
+    from stockincomebillitem
+  </select>
+</mapper>

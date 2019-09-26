@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+
+    <!-- 1.配置apache的管理器 -->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <!-- 配置一个realm，到数据库中获取权限数据 -->
+        <property name="realm" ref="myRealm"/>
+    </bean>
+
+
+    <!-- 2.我们可以自定义一个realm【暂时未实现功能】这个必需实现org.apache.shiro.realm.Realm接口 -->
+    <bean id="myRealm" class="cn.demo.crm.shiro.realm.JpaRealm">
+        <property name="credentialsMatcher">
+            <!--设置加密匹配方案-->
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                <!-- 编码的方式使用:md5 -->
+                <property name="hashAlgorithmName" value="MD5"/>
+                <!-- 编码的次数:10 -->
+                <property name="hashIterations" value="10"/>
+            </bean>
+        </property>
+
+    </bean>
+
+    <!-- 3.lifecycleBeanPostProcessor：可以自动调用在Spring Ioc窗口中 Shiro bean的生成周期方法 -->
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+    <!-- 4.启动ioc容器中使用 shiro的注解，但是必需配置在Spring Ioc容器中Shiro bean的生成周期方法 -->
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+          depends-on="lifecycleBeanPostProcessor"/>
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+
+    <!-- 5.shiro的真实过滤器(注：这个名称必需和web.xml的代表过滤器【DelegatingFilterProxy】名称一样) -->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"/>
+        <!-- 登录的url,如果没有登录，你访问的路径会跳到这个页面 -->
+        <property name="loginUrl" value="/login"/>
+        <!-- 登录成功的url,如果登录成功，会跳转到这个页面 -->
+        <property name="successUrl" value="/s/main"/>
+        <!-- 没有权限时跳转到这个位置 -->
+        <property name="unauthorizedUrl" value="/s/unauthorized.jsp"/>
+        <!--
+            配置哪些资源被保护，哪些资源需要权限
+            anon：不需要登录也可以访问相应的权限
+            authc：需要权限才能访问
+              /** ：所有文件及其子文件
+        -->
+        <!--<property name="filterChainDefinitions">-->
+            <!--<value>-->
+                <!--/s/login.jsp = anon-->
+                <!--/login=anon-->
+                <!--&lt;!&ndash;权限应该从数据库中读取&ndash;&gt;-->
+                <!--/s/permission.jsp=perms[user:*]-->
+                <!--/** = authc-->
+                <!--&lt;!&ndash;/s/permission.jsp=perms[user:*]如果写在下面，则无效，没有对应权限也可进，为什么&ndash;&gt;-->
+            <!--</value>-->
+        <!--</property>-->
+        <!--使用map的方式操作权限 filterChainDefinitionMap LinkedHashMap-->
+        <property name="filterChainDefinitionMap" ref="FilterChainDefinitionBean"/>
+        <property name="filters">
+            <map>
+                <entry key="myPerms" value-ref="mySourcePermissionsFilter"></entry>
+            </map>
+        </property>
+    </bean>
+
+    <!--配置自定义的权限处理的过滤器-->
+    <bean id="mySourcePermissionsFilter" class="cn.demo.crm.shiro.realm.MyPermissionsAuthorizationFilter"></bean>
+
+    <!--自定义的权限添加-->
+    <bean id="FilterChainDefinitionBean" factory-bean="FilterChainDefinitionMapBean" factory-method="creatFMap"></bean>
+    <bean id="FilterChainDefinitionMapBean" class="cn.demo.crm.shiro.realm.FilterChainDefinitionMapBuilder"></bean>
+
+</beans>

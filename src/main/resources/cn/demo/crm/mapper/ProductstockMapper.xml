@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.demo.crm.mapper.ProductstockMapper">
+  <resultMap id="BaseResultMap" type="cn.demo.crm.domain.Productstock">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="num" jdbcType="DECIMAL" property="num" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="incomeDate" jdbcType="TIMESTAMP" property="incomedate" />
+    <result column="warning" jdbcType="BIT" property="warning" />
+    <result column="topNum" jdbcType="DECIMAL" property="topnum" />
+    <result column="bottomNum" jdbcType="DECIMAL" property="bottomnum" />
+    <result column="product_id" jdbcType="BIGINT" property="productId" />
+    <result column="depot_id" jdbcType="BIGINT" property="depotId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from productstock
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="cn.demo.crm.domain.Productstock">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into productstock (id, num, amount, 
+      price, incomeDate, warning, 
+      topNum, bottomNum, product_id, 
+      depot_id)
+    values (#{id,jdbcType=BIGINT}, #{num,jdbcType=DECIMAL}, #{amount,jdbcType=DECIMAL}, 
+      #{price,jdbcType=DECIMAL}, #{incomedate,jdbcType=TIMESTAMP}, #{warning,jdbcType=BIT}, 
+      #{topnum,jdbcType=DECIMAL}, #{bottomnum,jdbcType=DECIMAL}, #{productId,jdbcType=BIGINT}, 
+      #{depotId,jdbcType=BIGINT})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.demo.crm.domain.Productstock">
+    update productstock
+    set num = #{num,jdbcType=DECIMAL},
+      amount = #{amount,jdbcType=DECIMAL},
+      price = #{price,jdbcType=DECIMAL},
+      incomeDate = #{incomedate,jdbcType=TIMESTAMP},
+      warning = #{warning,jdbcType=BIT},
+      topNum = #{topnum,jdbcType=DECIMAL},
+      bottomNum = #{bottomnum,jdbcType=DECIMAL},
+      product_id = #{productId,jdbcType=BIGINT},
+      depot_id = #{depotId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, num, amount, price, incomeDate, warning, topNum, bottomNum, product_id, 
+    depot_id
+    from productstock
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, num, amount, price, incomeDate, warning, topNum, bottomNum, product_id, 
+    depot_id
+    from productstock
+  </select>
+</mapper>

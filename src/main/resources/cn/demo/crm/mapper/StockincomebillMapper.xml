@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.demo.crm.mapper.StockincomebillMapper">
+  <resultMap id="BaseResultMap" type="cn.demo.crm.domain.Stockincomebill">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="vdate" jdbcType="TIMESTAMP" property="vdate" />
+    <result column="totalAmount" jdbcType="DECIMAL" property="totalamount" />
+    <result column="totalNum" jdbcType="DECIMAL" property="totalnum" />
+    <result column="inputTime" jdbcType="TIMESTAMP" property="inputtime" />
+    <result column="auditorTime" jdbcType="TIMESTAMP" property="auditortime" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="supplier_id" jdbcType="BIGINT" property="supplierId" />
+    <result column="auditor_id" jdbcType="BIGINT" property="auditorId" />
+    <result column="inputUser_id" jdbcType="BIGINT" property="inputuserId" />
+    <result column="keeper_id" jdbcType="BIGINT" property="keeperId" />
+    <result column="depot_id" jdbcType="BIGINT" property="depotId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from stockincomebill
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="cn.demo.crm.domain.Stockincomebill">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into stockincomebill (id, vdate, totalAmount, 
+      totalNum, inputTime, auditorTime, 
+      status, supplier_id, auditor_id, 
+      inputUser_id, keeper_id, depot_id
+      )
+    values (#{id,jdbcType=BIGINT}, #{vdate,jdbcType=TIMESTAMP}, #{totalamount,jdbcType=DECIMAL}, 
+      #{totalnum,jdbcType=DECIMAL}, #{inputtime,jdbcType=TIMESTAMP}, #{auditortime,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=INTEGER}, #{supplierId,jdbcType=BIGINT}, #{auditorId,jdbcType=BIGINT}, 
+      #{inputuserId,jdbcType=BIGINT}, #{keeperId,jdbcType=BIGINT}, #{depotId,jdbcType=BIGINT}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.demo.crm.domain.Stockincomebill">
+    update stockincomebill
+    set vdate = #{vdate,jdbcType=TIMESTAMP},
+      totalAmount = #{totalamount,jdbcType=DECIMAL},
+      totalNum = #{totalnum,jdbcType=DECIMAL},
+      inputTime = #{inputtime,jdbcType=TIMESTAMP},
+      auditorTime = #{auditortime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER},
+      supplier_id = #{supplierId,jdbcType=BIGINT},
+      auditor_id = #{auditorId,jdbcType=BIGINT},
+      inputUser_id = #{inputuserId,jdbcType=BIGINT},
+      keeper_id = #{keeperId,jdbcType=BIGINT},
+      depot_id = #{depotId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, vdate, totalAmount, totalNum, inputTime, auditorTime, status, supplier_id, 
+    auditor_id, inputUser_id, keeper_id, depot_id
+    from stockincomebill
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, vdate, totalAmount, totalNum, inputTime, auditorTime, status, supplier_id, 
+    auditor_id, inputUser_id, keeper_id, depot_id
+    from stockincomebill
+  </select>
+</mapper>

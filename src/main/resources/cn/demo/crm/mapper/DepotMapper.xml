@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.demo.crm.mapper.DepotMapper">
+  <resultMap id="BaseResultMap" type="cn.demo.crm.domain.Depot">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="maxCapacity" jdbcType="DECIMAL" property="maxcapacity" />
+    <result column="currentCapacity" jdbcType="DECIMAL" property="currentcapacity" />
+    <result column="totalAmount" jdbcType="DECIMAL" property="totalamount" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from depot
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="cn.demo.crm.domain.Depot">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into depot (id, name, maxCapacity, 
+      currentCapacity, totalAmount)
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{maxcapacity,jdbcType=DECIMAL}, 
+      #{currentcapacity,jdbcType=DECIMAL}, #{totalamount,jdbcType=DECIMAL})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.demo.crm.domain.Depot">
+    update depot
+    set name = #{name,jdbcType=VARCHAR},
+      maxCapacity = #{maxcapacity,jdbcType=DECIMAL},
+      currentCapacity = #{currentcapacity,jdbcType=DECIMAL},
+      totalAmount = #{totalamount,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, name, maxCapacity, currentCapacity, totalAmount
+    from depot
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, name, maxCapacity, currentCapacity, totalAmount
+    from depot
+  </select>
+</mapper>

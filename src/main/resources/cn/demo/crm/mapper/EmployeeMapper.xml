@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.demo.crm.mapper.EmployeeMapper">
+    <resultMap id="BaseResultMap" type="cn.demo.crm.domain.Employee">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="headImage" jdbcType="VARCHAR" property="headimage"/>
+        <result column="age" jdbcType="INTEGER" property="age"/>
+        <result column="department_id" jdbcType="BIGINT" property="departmentId"/>
+        <association property="department" javaType="cn.demo.crm.domain.Department"
+                     column="department_id" select="cn.demo.crm.mapper.DepartmentMapper.selectByPrimaryKey">
+        </association>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from employee
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="cn.demo.crm.domain.Employee">
+        <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into employee (id, username, password,
+        email, headImage, age,
+        department_id)
+        values (#{id,jdbcType=BIGINT}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+        #{email,jdbcType=VARCHAR}, #{headimage,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER},
+        #{departmentId,jdbcType=BIGINT})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.demo.crm.domain.Employee">
+    update employee
+    set username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      headImage = #{headimage,jdbcType=VARCHAR},
+      age = #{age,jdbcType=INTEGER},
+      department_id = #{departmentId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, username, password, email, headImage, age, department_id
+    from employee
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select id, username, password, email, headImage, age, department_id
+    from employee
+  </select>
+    <select id="selectByPage" resultMap="BaseResultMap">
+    select id, username, password, email, headImage, age, department_id
+    from employee limit #{offset},#{rows}
+  </select>
+    <select id="findCount" resultType="int">
+    select count(*)
+    from employee
+  </select>
+    <select id="search" resultMap="BaseResultMap">
+        select id, username, password, email, headImage, age, department_id
+        from employee
+        <where>
+            <if test="employee.username != null">
+                username like concat('%',#{employee.username},'%')
+            </if>
+            <if test="employee.email != null">
+                and email like concat('%',#{employee.email},'%')
+            </if>
+            <if test="employee.departmentId != null">
+                and department_id like concat('%',#{employee.departmentId},'%')
+            </if>
+        </where>
+        limit #{con.offset},#{con.rows}
+    </select>
+    <select id="checkUserName" parameterType="string" resultMap="BaseResultMap">
+    select id, username, password, email, headImage, age, department_id
+    from employee
+    where username = #{username}
+  </select>
+    <select id="selectByUsername" parameterType="string" resultType="cn.demo.crm.domain.Employee">
+    select * from employee where username = #{username}
+  </select>
+    <select id="findSnByEmp" parameterType="long" resultType="string">
+    select e.sn from employee a
+    INNER JOIN employee_role b on a.id = b.employee_id
+    INNER JOIN role c ON b.role_id = c.id
+    INNER JOIN role_permission d ON c.id = d.role_id
+    INNER JOIN permission e ON d.permission_id = e.id
+    WHERE a.id = #{id}
+  </select>
+</mapper>

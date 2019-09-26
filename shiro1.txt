@@ -1,0 +1,100 @@
+(1) shiro: 安全框架
+
+    shiro:四个核心内容
+            身份认证(登录) 授权(角色 权限 资源)
+            会话管理(session) 密码学(安全性)--了解就OK
+
+(2) shiro的入门例子
+
+        a.得到安全的管理器
+        b.得到主体对象 (当前操作对象)
+            SecurityUtils.getSubject()
+        c.判断对象认证
+             currentUser.isAuthenticated()
+                    没有认证--认证
+                        准备一个UsernameAndPasswordToken
+                        调用 currentUser.login(token);
+
+                        UnknownAccountException 用户不存在
+                        IncorrectCredentialsException 密码出问题
+                        AuthenticationException 其它认证异常
+
+                    有认证 -- 就不用认证
+        d.判断角色
+        hasRole("schwartz")
+        e.判断权限
+        currentUser.isPermitted("lightsaber:wield")
+
+  ------------------------------------------------------
+ (3)Shrio和spring的整合使用
+       a.加入依赖包
+       b.web.xml里面配置代理过滤器DelegatingFilterProxy
+       c.写单独shiro的配置文件
+            配置securityManager
+            配置realm
+            配置生命周期管理
+            配置真实过滤器进行处理
+                如果没有认证 返回loginUrl --对应页面
+                如果认证成功 返回successUrl -- 对应页面
+                如果认证成功 访问一个页面没有相应权限 -- unauthorizedUrl --对应页面
+            配置资源对应的访问权限
+                 /s/login.jsp=anon
+                /login=anon
+                /** = authc
+
+----------------------------------------------------------
+(3) 身份认证
+        认证流程:
+            准备登录页面(传递用户名和密码)-- LoginController
+              a.得到主体 SecurityUtils.getSubject();
+              b.判断是否认证过
+                    封装令牌
+                    没有认证 -- 调用login(token)去认证
+              c.realm 完成用户名和密码认证
+
+              d.认证失败,出现异常
+              e.认证成功,跳转成功页面
+
+-----------------------------------------------
+    (1)普通的认证
+        new SimpleAuthenticationInfo(principal,credentials,getName());
+
+    (2)加密认证:
+    页面 123456(明文) --- >shiro进行加密(MD5加密) ---dfajlfjdslafjlsad
+                --->数据库 (dfajlfjdslafjlsad)
+
+    (3)加密加盐认证:(推荐使用方法)
+    ByteSource salt = ByteSource.Util.bytes("itsource");
+    new SimpleAuthenticationInfo(principal,credentials,salt,getName());
+
+
+
+ ---------------------------------------------------------------
+    授权:(控制一个人应该访问什么内容,什么内容不应该访问)
+
+       用户(主体Subject) --> 当前登录之后用户
+
+      角色(Role)  --> 用户会对应的角色 比如 管理员 超级管理员...
+
+      权限(Permission) -->角色会对相应的权限(给资源加把锁) -- 必须要有权限才能访问对应的资源
+
+      资源(Resource) --> 具体的内容 url路径 /employee/add
+
+-------------------------------------------------------------------
+  要完成这个授权 怎么操作:
+    shiro方式:
+        (1)编程式控制
+            hasRole()
+            isPermitted()
+        (2)配置方式
+            @RequiredPermission("user:delete")
+            方法
+        (3)通过JSP shiro的标签
+            <shiro:hasPermission>
+                删除
+             <shiro:hasPermission/>
+----------------------------------------------------------------
+
+
+
+
